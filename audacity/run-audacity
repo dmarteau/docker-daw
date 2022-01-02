@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# XXX Note: --ipc host needed for Gtk MIT-SHM error
+# see https://github.com/jessfraz/dockerfiles/issues/359
+
+docker run -it --rm --name audacity --ipc host --net host --privileged \
+    -u $(id -u):$(id -g) \
+    --group-add $(getent group audio | cut -d: -f3) \
+    -e DISPLAY=unix$DISPLAY \
+    -e USER=$USER \
+    -e HOME=/home/$USER \
+    -e PULSE_SERVER=unix:/run/pulse/native \
+    -v "/run/user/${UID}/pulse/native:/run/pulse/native" \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v $HOME:/home/$USER \
+    audacity "$@"
+
